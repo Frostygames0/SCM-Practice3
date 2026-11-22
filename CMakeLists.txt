@@ -15,6 +15,7 @@ set(CLI11_PRECOMPILED ON CACHE BOOL "" FORCE)
 FetchContent_Declare(cli11
     GIT_REPOSITORY https://github.com/cliutils/cli11.git
     GIT_TAG v2.7.2
+    GIT_SHALLOW TRUE
     SYSTEM
 )
 FetchContent_MakeAvailable(cli11)
@@ -22,7 +23,9 @@ FetchContent_MakeAvailable(cli11)
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(googletest
-    URL https://github.com/google/googletest/archive/refs/tags/v1.18.0.tar.gz
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG v1.18.0
+    GIT_SHALLOW TRUE
     SYSTEM
 )
 FetchContent_MakeAvailable(googletest)
