@@ -26,9 +26,9 @@ TEST(Assembler, ParsesAllInstructions)
     ASSERT_TRUE(program) << program.error();
     ASSERT_EQ(program->size(), 4U);
     EXPECT_EQ((*program)[0].opcode, Codec::Opcode::Load);
-    EXPECT_EQ((*program)[0].args, 968U);
+    EXPECT_EQ((*program)[0].arg, 968U);
     EXPECT_EQ((*program)[3].opcode, Codec::Opcode::Min);
-    EXPECT_EQ((*program)[3].args, 618U);
+    EXPECT_EQ((*program)[3].arg, 618U);
 }
 
 TEST(Assembler, IgnoresCommentsBlankLinesAndWhitespace)
@@ -43,14 +43,14 @@ TEST(Assembler, HandlesWindowsLineEndingsAndBom)
     const auto program = Asm::assemble("\xEF\xBB\xBFLOAD 1\r\nREAD 2\r\n");
     ASSERT_TRUE(program) << program.error();
     ASSERT_EQ(program->size(), 2U);
-    EXPECT_EQ((*program)[1].args, 2U);
+    EXPECT_EQ((*program)[1].arg, 2U);
 }
 
 TEST(Assembler, AcceptsLowercaseAndHex)
 {
     const auto program = Asm::assemble("load 0x3C8");
     ASSERT_TRUE(program) << program.error();
-    EXPECT_EQ((*program)[0].args, 968U);
+    EXPECT_EQ((*program)[0].arg, 968U);
 }
 
 TEST(Assembler, AcceptsMaximumArguments)

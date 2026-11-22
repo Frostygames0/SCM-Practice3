@@ -27,19 +27,19 @@ struct Vector
 
 const std::vector<Vector> SpecVectors = {
     {
-     .instruction = {.opcode = Opcode::Load, .args = 968},
+     .instruction = {.opcode = Opcode::Load, .arg = 968},
      .encoded = bytes({0x87, 0x3C, 0x00, 0x00, 0x00}),
      },
     {
-     .instruction = {.opcode = Opcode::Read, .args = 341},
+     .instruction = {.opcode = Opcode::Read, .arg = 341},
      .encoded = bytes({0x56, 0x15, 0x00, 0x00, 0x00}),
      },
     {
-     .instruction = {.opcode = Opcode::Write, .args = 554},
+     .instruction = {.opcode = Opcode::Write, .arg = 554},
      .encoded = bytes({0xA9, 0x22, 0x00, 0x00, 0x00}),
      },
     {
-     .instruction = {.opcode = Opcode::Min, .args = 618},
+     .instruction = {.opcode = Opcode::Min, .arg = 618},
      .encoded = bytes({0xA4, 0x26, 0x00, 0x00, 0x00}),
      },
 };
@@ -60,20 +60,20 @@ TEST(Codec, DecodesSpecVectors)
         const auto decoded = decode(encoded);
         ASSERT_TRUE(decoded);
         EXPECT_EQ(decoded->opcode, instruction.opcode);
-        EXPECT_EQ(decoded->args, instruction.args);
+        EXPECT_EQ(decoded->arg, instruction.arg);
     }
 }
 
 TEST(Codec, RoundTripsMaximumArguments)
 {
     for (const Instruction instruction : {
-             Instruction{.opcode = Opcode::Load, .args = (1U << ConstantBits) - 1},
-             Instruction{.opcode = Opcode::Min,  .args = (1U << AddressBits) - 1 },
+             Instruction{.opcode = Opcode::Load, .arg = (1U << ConstantBits) - 1},
+             Instruction{.opcode = Opcode::Min,  .arg = (1U << AddressBits) - 1 },
     })
     {
         const auto decoded = decode(encode(instruction));
         ASSERT_TRUE(decoded);
-        EXPECT_EQ(decoded->args, instruction.args);
+        EXPECT_EQ(decoded->arg, instruction.arg);
     }
 }
 

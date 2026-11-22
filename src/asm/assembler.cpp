@@ -103,7 +103,7 @@ std::expected<Codec::Instruction, std::string> parseInstruction(std::string_view
                                std::string(info->mnemonic)};
     }
 
-    return Codec::Instruction{.opcode = info->opcode, .args = *value};
+    return Codec::Instruction{.opcode = info->opcode, .arg = *value};
 }
 
 } // namespace

@@ -72,7 +72,7 @@ constexpr bool argsFit(Opcode op, std::uint32_t args)
 struct Instruction
 {
     Opcode opcode;
-    std::uint32_t args;
+    std::uint32_t arg;
 };
 
 using EncodedBytes = std::array<std::byte, InstructionSize>;

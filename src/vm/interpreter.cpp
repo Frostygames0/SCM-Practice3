@@ -12,7 +12,7 @@ std::expected<void, std::string> execute(State& state, const Codec::Instruction&
 {
     using Codec::Opcode;
 
-    const auto address = instruction.args;
+    const auto address = instruction.arg;
     if (instruction.opcode != Opcode::Load && address >= state.data.size())
     {
         return std::unexpected{
@@ -22,7 +22,7 @@ std::expected<void, std::string> execute(State& state, const Codec::Instruction&
     switch (instruction.opcode)
     {
         case Opcode::Load:
-            state.accumulator = instruction.args;
+            state.accumulator = instruction.arg;
             break;
         case Opcode::Read:
             state.accumulator = state.data[address];

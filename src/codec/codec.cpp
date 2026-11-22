@@ -15,7 +15,7 @@ constexpr std::uint64_t OpcodeMask = (1U << OpcodeBits) - 1;
 EncodedBytes encode(const Instruction& instruction)
 {
     std::uint64_t word = static_cast<std::uint64_t>(instruction.opcode) |
-                         (static_cast<std::uint64_t>(instruction.args) << OpcodeBits);
+                         (static_cast<std::uint64_t>(instruction.arg) << OpcodeBits);
 
     EncodedBytes out;
 
@@ -50,7 +50,7 @@ std::optional<Instruction> decode(const EncodedBytes& bytes)
 
     return Instruction{
         .opcode = info->opcode,
-        .args = static_cast<std::uint32_t>(args),
+        .arg = static_cast<std::uint32_t>(args),
     };
 }
 
