@@ -86,3 +86,5 @@ install/
 compile_commands.json
 .cache/
 .vscode/
+
+out/
