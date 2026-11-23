@@ -1,11 +1,14 @@
-#include <CLI/CLI.hpp>
-
 #include <cstddef>
+#include <cstdlib>
+#include <filesystem>
 #include <format>
 #include <iostream>
 #include <string>
 
+#include <CLI/CLI.hpp>
+
 #include "assembler.hpp"
+#include "codec.hpp"
 
 namespace
 {
@@ -18,53 +21,61 @@ std::string toHex(const SCM::Codec::EncodedBytes& bytes)
     }
     return out;
 }
+
+template <typename E>
+int fail(const E& error)
+{
+    std::cerr << error << '\n';
+    return EXIT_FAILURE;
+}
 } // namespace
 
 int main(int argc, char** argv)
 {
     CLI::App app{"Assembler for the SCM educational virtual machine"};
 
-    std::filesystem::path codePath;
-    app.add_option("-c,--code", codePath, "Path to the source file to assemble")
+    std::filesystem::path inputPath;
+    app.add_option("-i,--input", inputPath, "Path to the source file to assemble")
         ->check(CLI::ExistingFile)
         ->required();
 
-    std::filesystem::path assembledPath;
-    app.add_option("-r,--result", assembledPath, "Path to the output binary file")->required();
+    std::filesystem::path resultPath;
+    app.add_option("-r,--result", resultPath, "Path to the output binary file")->required();
 
-    bool testMode = false;
+    bool testMode{};
     app.add_flag("-t,--test", testMode, "Print the machine code of every instruction");
 
     CLI11_PARSE(app, argc, argv);
 
-    auto source = SCM::Asm::readSource(codePath);
+    using namespace SCM;
+
+    const auto source = Asm::readSource(inputPath);
     if (!source)
     {
-        std::cerr << source.error() << '\n';
-        return 1;
+        return fail(source.error());
     }
 
-    auto program = SCM::Asm::assemble(*source);
+    const auto program = Asm::assemble(*source);
     if (!program)
     {
-        std::cerr << codePath.string() << ": " << program.error() << '\n';
-        return 1;
+        return fail(program.error());
     }
 
-    if (auto written = SCM::Asm::writeBinary(assembledPath, *program); !written)
+    if (const auto written = Asm::writeBinary(resultPath, *program); !written)
     {
-        std::cerr << written.error() << '\n';
-        return 1;
+        return fail(written.error());
     }
 
     if (testMode)
     {
         for (const auto& instruction : *program)
         {
-            std::cout << toHex(SCM::Codec::encode(instruction)) << '\n';
+            std::cout << toHex(Codec::encode(instruction)) << '\n';
         }
     }
 
-    std::cout << "Binary size: " << program->size() * SCM::Codec::InstructionSize << " bytes\n";
-    return 0;
+    const auto binarySize = program->size() * Codec::InstructionSize;
+    std::cout << "Binary size: " << binarySize << " bytes\n";
+
+    return EXIT_SUCCESS;
 }

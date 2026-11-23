@@ -1,10 +1,22 @@
-#include <CLI/CLI.hpp>
-
 #include <cstdint>
+#include <cstdlib>
+#include <filesystem>
 #include <iostream>
 #include <utility>
 
+#include <CLI/CLI.hpp>
+
 #include "interpreter.hpp"
+
+namespace
+{
+template <typename E>
+int fail(const E& error)
+{
+    std::cerr << error << '\n';
+    return EXIT_FAILURE;
+}
+} // namespace
 
 int main(int argc, char** argv)
 {
@@ -24,25 +36,25 @@ int main(int argc, char** argv)
 
     CLI11_PARSE(app, argc, argv);
 
-    auto code = SCM::Vm::readBinary(programPath);
+    using namespace SCM;
+
+    const auto code = Vm::readBinary(programPath);
     if (!code)
     {
-        std::cerr << code.error() << '\n';
-        return 1;
+        return fail(code.error());
     }
 
-    auto state = SCM::Vm::run(*code);
+    const auto state = Vm::run(*code);
     if (!state)
     {
-        std::cerr << programPath.string() << ": " << state.error() << '\n';
-        return 1;
+        return fail(state.error());
     }
 
     const SCM::Vm::Range dumpRange{.first = range.first, .last = range.second};
-    if (auto dumped = SCM::Vm::writeDump(dumpPath, *state, dumpRange); !dumped)
+    if (auto dumped = Vm::writeDump(dumpPath, *state, dumpRange); !dumped)
     {
-        std::cerr << dumped.error() << '\n';
-        return 1;
+        return fail(dumped.error());
     }
-    return 0;
+
+    return EXIT_SUCCESS;
 }
