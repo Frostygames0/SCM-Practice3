@@ -94,16 +94,21 @@ std::expected<std::vector<std::byte>, std::string> readBinary(const std::filesys
         return std::unexpected{"cannot get size of '" + path.string() + "': " + ec.message()};
     }
 
-    std::ifstream in(path, std::ios::binary);
-    if (!in)
+    if (size == 0)
+    {
+        return {};
+    }
+
+    std::ifstream file(path, std::ios::binary);
+    if (!file)
     {
         return std::unexpected{"cannot open '" + path.string() + "'"};
     }
 
     std::vector<std::byte> code(size);
+    file.read(reinterpret_cast<char*>(code.data()), static_cast<std::streamsize>(size));
 
-    if (size > 0 &&
-        !in.read(reinterpret_cast<char*>(code.data()), static_cast<std::streamsize>(size)))
+    if (!file || file.gcount() != static_cast<std::streamsize>(size))
     {
         return std::unexpected{"failed to read '" + path.string() + "'"};
     }
