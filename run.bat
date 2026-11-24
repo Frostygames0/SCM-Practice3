@@ -14,6 +14,6 @@ cmake -S . -B build || exit /b 1
 cmake --build build --config Release || exit /b 1
 if not exist out mkdir out
 
-build\bin\asm.exe -c "%source%" -r "out\%name%.bin" -t || exit /b 1
+build\bin\asm.exe -i "%source%" -r "out\%name%.bin" -t || exit /b 1
 build\bin\vm.exe -p "out\%name%.bin" -d "out\%name%.xml" -r %first% %last% || exit /b 1
 type "out\%name%.xml"
