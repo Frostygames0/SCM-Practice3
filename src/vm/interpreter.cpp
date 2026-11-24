@@ -1,9 +1,10 @@
 #include "interpreter.hpp"
 
 #include <algorithm>
+#include <expected>
+#include <filesystem>
 #include <format>
 #include <fstream>
-#include <iterator>
 
 namespace SCM::Vm
 {
@@ -86,20 +87,27 @@ std::expected<std::string, std::string> toXml(const State& state, Range range)
 
 std::expected<std::vector<std::byte>, std::string> readBinary(const std::filesystem::path& path)
 {
+    std::error_code ec;
+    const auto size = std::filesystem::file_size(path, ec);
+    if (ec)
+    {
+        return std::unexpected{"cannot get size of '" + path.string() + "': " + ec.message()};
+    }
+
     std::ifstream in(path, std::ios::binary);
     if (!in)
     {
         return std::unexpected{"cannot open '" + path.string() + "'"};
     }
 
-    std::vector<char> raw{std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{}};
-    if (in.bad())
+    std::vector<std::byte> code(size);
+
+    if (size > 0 &&
+        !in.read(reinterpret_cast<char*>(code.data()), static_cast<std::streamsize>(size)))
     {
         return std::unexpected{"failed to read '" + path.string() + "'"};
     }
 
-    std::vector<std::byte> code(raw.size());
-    std::ranges::transform(raw, code.begin(), [](char c) { return static_cast<std::byte>(c); });
     return code;
 }
 
