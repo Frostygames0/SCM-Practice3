@@ -122,9 +122,9 @@ TEST(Interpreter, VectorMinExamples)
         std::string_view file;
         std::vector<std::uint32_t> expected;
     } cases[] = {
-        {"vector_min_1.asm", {10, 143, 143, 0, 143}   },
-        {"vector_min_2.asm", {143, 143, 143, 143, 100}},
-        {"vector_min_3.asm", {142, 143, 143, 0, 143}  },
+        {.file = "vector_min_1.asm", .expected = {10, 143, 143, 0, 143}   },
+        {.file = "vector_min_2.asm", .expected = {143, 143, 143, 143, 100}},
+        {.file = "vector_min_3.asm", .expected = {142, 143, 143, 0, 143}  },
     };
 
     for (const auto& [file, expected] : cases)
